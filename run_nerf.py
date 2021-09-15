@@ -378,13 +378,13 @@ def render_path(render_poses, hwf, chunk, render_kwargs, gt_imgs=None, savedir=N
 def create_nerf(args):
     """Instantiate NeRF's MLP model."""
 
-    embed_fn, input_ch = get_embedder(args.multires, args.i_embed)
+    embed_fn, input_ch = get_embedder(args.multires, args.i_embed, args.int_low_freq)
 
     input_ch_views = 0
     embeddirs_fn = None
     if args.use_viewdirs:
         embeddirs_fn, input_ch_views = get_embedder(
-            args.multires_views, args.i_embed)
+            args.multires_views, args.i_embed, args.int_low_freq)
     output_ch = 4
     skips = [4]
     model = init_nerf_model(
@@ -497,6 +497,10 @@ def config_parser():
                         help='specific weights npy file to reload for coarse network')
     parser.add_argument("--random_seed", type=int, default=None,
                         help='fix random seed for repeatability')
+
+    # experimentation options
+    parser.add_argument("--int_low_freq", type=bool, default=False,
+                        help='interpolate positional embeddings projected at lower 1/3 of freqeuncies')
     
     # pre-crop options
     parser.add_argument("--precrop_iters", type=int, default=0,
